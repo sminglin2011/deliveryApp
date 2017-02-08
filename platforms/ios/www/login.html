@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html ng-app="deliveryApp">
+<head>
+  <meta charset="UTF-8">
+  <title>Login Form</title>
+    <link rel="stylesheet" href="css/login.css">
+    <script src="lib/angular/angular.js"></script>
+</head>
+
+<body>
+
+<div class="login" ng-controller="loginController">
+    <form action="index.html" ng-submit="login($event)">
+        <h1>Delivery App</h1>
+        <input type="text" placeholder="Login ID" required="required" ng-model="model.loginId"/>
+        <input type="password" placeholder="Password" required="required" ng-model="model.password" />
+        <!--
+        <select ng-model="model.vehicle" required="required">
+        	<option value="">Select Vehicle</option>
+        	<option value="{{v.vehicleNo}}" ng-repeat="v in vehicleList track by v.vehicleNo">{{v.vehicleNo}}</option>
+        </select>
+         -->
+        <button type="submit" class="btn btn-primary btn-block btn-large">Login</button>
+        <div style="color: red">{{message}}</div>
+    </form>
+</div>
+
+<script type="text/javascript">
+    angular.module("deliveryApp",[]).controller("loginController", function($scope, $http, $filter, $window, $location){
+        $scope.model = {};
+        $scope.drivers = [{name:"1", pwd:"1"}];
+        var result = false;
+        $scope.login = function(event){
+            angular.forEach($scope.drivers, function(d) {
+                if ($scope.model.loginId == d.name && $scope.model.password == d.pwd) {
+                    result = true;
+                    return false;
+                }
+            })
+            if (result == false) {
+                $scope.message = "Login ID or Password was incorrect";
+                event.preventDefault();
+            }
+        }
+    })
+</script>
+</body>
+</html>

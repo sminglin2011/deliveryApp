@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+<meta charset="UTF-8">
+    <link href="static/h-ui/css/H-ui.min.css" rel="stylesheet" type="text/css" />
+    <link href="static/h-ui.admin/css/H-ui.admin.css" rel="stylesheet" type="text/css" />
+    <link href="lib/Hui-iconfont/1.0.7/iconfont.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="lib/jquery/jquery.js"></script>
+    <script type="text/javascript" src="lib/datatables/jquery.dataTables.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+    <script type="text/javascript" src="lib/My97DatePicker/WdatePicker.js"></script>
+    <script type="text/javascript" src="lib/My97DatePicker/ng-WdatePicker.js"></script>
+    <script src="lib/jSignature/jSignature.min.js"></script>
+    <script src="js/index.js"></script>
+<title>Eastwind Delivery App</title>
+</head>
+<body>
+<div class="page-container">
+<div ng-view></div>
+
+</div>
+<script type="text/javascript">
+    var app = angular.module("app",["ngRoute", 'ng-WdatePicker']);
+    app.config(function($routeProvider) {
+        $routeProvider
+            .when("/", {
+                templateUrl : "delivery-order-list.html",
+                controller : "deliveryOrderListCtrl"
+            })
+            .when("/deliveryOrder/:soNumber", {
+                templateUrl : "order-delivery-details.html"
+            })
+            .when("/collectionOrderList", {
+                templateUrl : "collection-order-list.html"
+            })
+            .when("/collectionOrder/:soNumber", {
+                templateUrl : "order-collection-details.html"
+            });
+    });
+
+    app.service('getVehicleList', function() {
+        this.myFunc = function (x) {
+            return x.toString(16);
+        }
+    });
+    app.controller("deliveryOrderListCtrl", function($scope, $http, $filter) {
+        $scope.vehicleList = [];
+        $http.get("http://ews-web.servebbs.com:8090/ewsoft/deliveryAppLogin").then(function(response){$scope.vehicleList = response.data})
+        $scope.deliveryOrderList = [];
+        $scope.collectionOrderList = [];
+        $http.get("http://ews-web.servebbs.com:8090/ewsoft/fetchOrderDeliveryList?vehicleNo="+$scope.vehicle)
+            .then(function (response) {if(response.data != null && response.data != '')$scope.deliveryOrderList=response.data });
+        $http.get("http://ews-web.servebbs.com:8090/ewsoft/fetchOrderCollectionList?vehicleNo="+$scope.vehicle)
+            .then(function (response) {if(response.data != null && response.data != '')$scope.collectionOrderList=response.data });
+    })
+    app.controller("deliveryOrderController", function($scope, $http, $routeParams, $document) {
+        $scope.deliveryOrder = {};
+        if (typeof ($routeParams.soNumber) != "undefined" && $routeParams.soNumber != '') {
+            $http.get("http://ews-web.servebbs.com:8090/ewsoft/fetchOrderDelivery?soNumber=" + $routeParams.soNumber)
+                .then(function(response){$scope.deliveryOrder = response.data; });
+        }
+        $scope.saveSign = function() {
+            var datapair = $("#signature").jSignature("getData", "svgbase64")
+            console.log(datapair);
+            var i = new Image()
+            i.src = "data:" + datapair[0] + "," + datapair[1]
+            $(i).appendTo($("#img")) // append the image (SVG) to DOM.
+        }
+        $scope.saveCollectionSign = function() {
+            var datapair = $("#signature").jSignature("getData", "svgbase64")
+            console.log(datapair);
+        }
+        $scope.clearSign = function() {
+            $("#signature").jSignature("clear");
+        }
+
+
+
+    })
+</script>
+</body>
+</html>

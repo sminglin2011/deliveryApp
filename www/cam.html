@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="user-scalable=no,
+    width=device-width, height=device-height, minimal-ui,
+    initial-scale=1, maximum-scale=1, minimum-scale=1">
+
+    <title>ng-camera</title>
+    <meta name="description" content="">
+
+    <link rel="stylesheet" href="js/camera/style.css">
+    <script src="lib/angular/angular.js" type="text/javascript"></script>
+    <script type="text/javascript" src="js/camera/webcam.js"></script>
+</head>
+<body ng-app="camera">
+
+<main class="app" ng-controller="cameraController">
+
+    <webcam placeholder="'static/H-ui/images/loading-s.gif'" channel="myChannel"
+            on-stream="onStream(stream)"
+            on-streaming="onSuccess()"
+            on-error="onError(err)"></webcam>
+    <canvas id="snapshot"></canvas>
+    <button class="btn btn-large btn-primary" ng-click="makeSnapshot()">Take snapshot!</button>
+    <button ng-click="downloadSnapshot(snapshotData)" ng-disabled="!snapshotData"
+            class="btn btn-large btn-primary" >Download ^^</button>
+    <textarea class="snapshot-data ng-pristine ng-valid" ng-model="snapshotData" ></textarea>
+</main>
+
+<script type="text/javascript">
+    angular.module("camera",['webcam']).controller("cameraController", function ($scope) {
+        var _video = null,
+            patData = null;
+        var vm = $scope;
+
+        vm.patOpts = {x: 0, y: 0, w: 25, h: 25};
+        vm.webcamError = false;
+
+        vm.myChannel = {
+            // the fields below are all optional
+            videoHeight: 400,
+            videoWidth: 300,
+            video: null // Will reference the video element on success
+        };
+        vm.channel = vm.myChannel;
+        vm.onError = function (err) {
+            vm.$apply(
+                function () {
+                    vm.webcamError = err;
+                }
+            );
+        }
+        vm.onStream = function (stream) {
+            // The video element contains the captured camera data
+            _video = vm.channel.video;
+            vm.$apply(function() {
+                vm.patOpts.w = _video.width;
+                vm.patOpts.h = _video.height;
+                vm.showDemos = true;
+            });
+        };
+        vm.onSuccess = function () {
+
+            _video = $scope.channel.video;
+            $scope.$apply(function() {
+                vm.patOpts.w = _video.width;
+                vm.patOpts.h = _video.height;
+            });
+        };
+        vm.makeSnapshot = function makeSnapshot() {
+            console.log("coming");
+            if (_video) {
+                var patCanvas = document.querySelector('#snapshot');
+                if (!patCanvas) return;
+
+                patCanvas.width = _video.width;
+                patCanvas.height = _video.height;
+                var ctxPat = patCanvas.getContext('2d');
+
+                var idata = getVideoData(vm.patOpts.x, $scope.patOpts.y, vm.patOpts.w, vm.patOpts.h);
+                console.log(idata,"what is it");
+                ctxPat.putImageData(idata, 0, 0);
+
+                sendSnapshotToServer(patCanvas.toDataURL());
+
+                patData = idata;
+            }
+        };
+        vm.downloadSnapshot = function downloadSnapshot(dataURL) {
+            window.location.href = dataURL;
+        };
+        var getVideoData = function getVideoData(x, y, w, h) {
+            var hiddenCanvas = document.createElement('canvas');
+            hiddenCanvas.width = _video.width;
+            hiddenCanvas.height = _video.height;
+            var ctx = hiddenCanvas.getContext('2d');
+            ctx.drawImage(_video, 0, 0, _video.width, _video.height);
+            return ctx.getImageData(x, y, w, h);
+        };
+        /**
+         * This function could be used to send the image data
+         * to a backend server that expects base64 encoded images.
+         *
+         * In this example, we simply store it in the scope for display.
+         */
+        var sendSnapshotToServer = function sendSnapshotToServer(imgBase64) {
+            vm.snapshotData = imgBase64;
+        };
+
+    })
+
+</script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html ng-app="deliveryApp">
+<head>
+<meta charset="UTF-8">
+    <link href="static/h-ui/css/H-ui.min.css" rel="stylesheet" type="text/css" />
+    <link href="static/h-ui.admin/css/H-ui.admin.css" rel="stylesheet" type="text/css" />
+    <link href="lib/Hui-iconfont/1.0.7/iconfont.css" rel="stylesheet" type="text/css" />
+
+
+    <script type="text/javascript" src="lib/jquery/jquery.js"></script>
+    <script type="text/javascript" src="lib/datatables/jquery.dataTables.js"></script>
+    <script src="lib/angular/angular.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+    <script type="text/javascript" src="lib/My97DatePicker/WdatePicker.js"></script>
+    <script type="text/javascript" src="lib/My97DatePicker/ng-WdatePicker.js"></script>
+    <script src="lib/jSignature/jSignature.min.js"></script>
+    <script src="js/deliveryApp.js"></script>
+    <script src="js/deliveryOrderListCtrl.js"></script>
+    <script src="js/deliveryOrderCtrl.js"></script>
+
+<title>Eastwind Delivery App</title>
+</head>
+<body>
+<div class="page-container">
+<div ng-view></div>
+
+</div>
+<script type="text/javascript">
+
+    angular.module("deliveryApp").service('getVehicleList', function() {
+        this.myFunc = function (x) {
+            return x.toString(16);
+        }
+    });
+
+
+</script>
+</body>
+</html>

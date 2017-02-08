@@ -1,0 +1,54 @@
+<div  ng-controller="deliveryOrderController">
+	<div class="text-c">
+					<span class="select-box" style="width: 200px;">
+                    <select class="select" ng-model="model.vehicle"  >
+                    	<option value="">Select Vehicle</option>
+        				<option value="{{v.vehicleNo}}" ng-repeat="v in vehicleList track by v.vehicleNo">{{v.vehicleNo}}</option>
+        			</select></span>
+		<input type="text" ng-model="model.date" wdate-Picker class="input-text" style="width:200px;" placeholder="Select Date">
+		<!--
+        <button class="btn btn-success" ng-click="keywordSearch()">
+            <i class="Hui-iconfont Hui-iconfont-search2"></i> Search
+        </button> -->
+	</div>
+	<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l">
+	<a href="#!collectionOrderList" class="btn btn-warning radius"><i class="Hui-iconfont">&#xe667;</i> Collection Order Listing</a></span>
+		<a href="#!photo" class="btn btn-warning radius"><i class="Hui-iconfont">&#xe667;</i> Photo</a></span>
+	</div>
+	<div class="mt-20">
+		<table class="table table-border table-bordered table-bg">
+			<thead>
+			<tr>
+				<th scope="col" colspan="9">Delivery Order Listing</th>
+			</tr>
+			<tr class="text-c">
+				<th width="5%">Del St</th>
+				<th width="10%">Order Number</th>
+				<th width="10%">Customer Name</th>
+				<th width="10%">Contact Person</th>
+				<th width="10%">Delivery Date</th>
+				<th width="10%">Time</th>
+				<th width="10%">No. Pax</th>
+				<th width="10%">Pay Type</th>
+				<th width="10%">Order Amount</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr class="text-c" ng-repeat="deliveryOrder in deliveryOrderList | filter:{vehicleNo: model.vehicle, scheduleDate: model.date} track by deliveryOrder.soNumber">
+				<td>{{deliveryOrder.deliverStatus}}</td>
+				<td><a class="btn btn-link" href="#!deliveryOrder/{{deliveryOrder.soNumber}}">{{deliveryOrder.soNumber}}</a></td>
+				<td>{{deliveryOrder.custName}}</td>
+				<td>{{deliveryOrder.custDelAtt}}</td>
+				<td>{{deliveryOrder.schDelDate | date: "yyyy-MM-dd" }}</td>
+				<td>{{deliveryOrder.schDelTime}}</td>
+				<td>{{deliveryOrder.noPax}}</td>
+				<td>{{deliveryOrder.payType}}</td>
+				<td>{{deliveryOrder.orderAmount | currency: "S$"}}</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+<script type="text/javascript">
+
+</script>
